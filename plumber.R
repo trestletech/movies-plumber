@@ -58,16 +58,22 @@ function(id){
 
 # Build the recommender
 library(reshape2)
+mat <- acast(ratings, userId ~ movieId, value.var = "rating")
 
 #' Get recommendations given a set of favorites
-#' @post /api/recommend
-function(likes, dislikes){
-  # Like Toy Story: likes <- c(1, 3114, 78499)
-  # Don't like dramas: dislikes <- c(318, 858, 912)
+#' @post /api/movies/recommend
+recom <- function(likes, dislikes){
+  if (missing(likes)){
+    likes <- c()
+  }
   
-  library(reshape2)
-  
-  mat <- acast(ratings, userId ~ movieId, value.var = "rating")
+  if (missing(dislikes)){
+    dislikes <- c()
+  }
+  if (length(likes) == 0 && length(dislikes) == 0){
+    # We don't have anything to go off of, so just return the global list.
+    return(top())
+  }
   
   # Create a full matrix of this user's ratings with NAs for all values not provided
   prefs <- rep(NA, ncol(mat))
@@ -80,21 +86,21 @@ function(likes, dislikes){
   prefs[likes] <- 5
   prefs[dislikes] <- 0
   
-  mat <- acast(ratings, userId ~ movieId, value.var = "rating")
-  # Supplement this user's preferences
-  mat <- rbind(mat, prefs)
+  # Replace the last user's data with this user's preferences
+  # We do lose one row of data, but it saves us from having to reallocate the matrix
+  thisMat <- rbind(mat, prefs)
   
-  user_movie <- as(mat, "realRatingMatrix")
-  rec <- Recommender(user_movie,method="UBCF")
+  user_movie <- as(thisMat, "realRatingMatrix")
+  rec <- Recommender(user_movie,method="SVD")
   
   prefs <- user_movie[nrow(user_movie)] # The last row is this user
   
   recom <- predict(rec, prefs, n=10)
   recs <- as.numeric(unlist(as(recom, "list")))
-  # Preview recommendations:
-  #   movies %>% filter(movieId %in% recs)
-  
-  recs
+  print(recs)
+ 
+  ratedMovies %>% 
+    filter(movieId %in% recs)
 }
 
 #' Serve the core HTML file for any request for a page
