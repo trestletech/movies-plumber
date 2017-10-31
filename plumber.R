@@ -97,7 +97,6 @@ recom <- function(likes, dislikes){
   
   recom <- predict(rec, prefs, n=10)
   recs <- as.numeric(unlist(as(recom, "list")))
-  print(recs)
  
   ratedMovies %>% 
     filter(movieId %in% recs)

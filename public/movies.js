@@ -15,7 +15,7 @@ const Home = {
       console.log(err);
     })
     
-    this.$http.post('/api/movies/recommend', {likes:favorites}).then(function(res) {
+    this.$http.post('/api/movies/recommend', {likes:likes, dislikes:dislikes}).then(function(res) {
       this.recommended = res.data.map(m => {
         m.link = '/movies/' + m.movieId
         return m
@@ -28,15 +28,17 @@ const Home = {
 
 // TODO: This global is gross. 
 //   Use proper nesting of these component and bind it to a nested property.
-let favorites = [];
+let likes = [];
+let dislikes = [];
 
 const Movie = { 
   path:'/movies/:id/', 
-  template: '<div><button v-on:click="favorite" style="float: right;">{{ favText }}</button><h2>{{ movie.title }}</h2><img :src="ratingsImg"></img></div>',
+  template: '<div><button v-on:click="like" style="float: right;">{{ likeText }}</button><button v-on:click="dislike" style="float: right;">{{ dislikeText }}</button><h2>{{ movie.title }}</h2><img :src="ratingsImg"></img></div>',
   data: function(){
     return {
       movie: {},
-      favText: 'Favorite'
+      likeText: '👍 Like',
+      dislikeText: '👎 Dislike'
     }
   }, mounted: function() {
     this.$http.get('/api/movies/' + this.$route.params.id).then(function(res) {
@@ -52,9 +54,13 @@ const Movie = {
       return '/api/movies/' + this.movie.movieId + '/ratings'
     }
   }, methods: {
-    favorite: function() {
-      favorites.push(this.$route.params.id)
-      this.favText = 'Added!'
+    dislike: function() {
+      dislikes.push(this.$route.params.id)
+      this.dislikeText = 'Disiked!'
+    },
+    like: function() {
+      likes.push(this.$route.params.id)
+      this.likeText = 'Liked!'
     }
   }
 }
