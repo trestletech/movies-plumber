@@ -1,5 +1,5 @@
 const Home = { 
-  template: '<div><div style="width: 50%; float: left;"><h2>Top 10 Movies</h2><ul><li v-for="m in movies"><router-link :to="m.link">{{ m.title }}</router-link></li></ul></div><search style="float: right; width: 45%;"></search></div>',
+  template: '<div><search style="float: right; width: 45%;"></search><div style="width: 50%"><h2>Top 10 Movies</h2><ul><li v-for="m in movies"><router-link :to="m.link">{{ m.title }}</router-link></li></ul></div><h2>Recommended for you</h2></div>',
   data: function(){
     return {
       movies: []
@@ -16,12 +16,17 @@ const Home = {
   }
 }
 
+// TODO: This global is gross. 
+//   Use proper nesting of these component and bind it to a nested property.
+let favorites = [];
+
 const Movie = { 
   path:'/movies/:id/', 
-  template: '<div><h2>{{ movie.title }}</h2><img :src="ratingsImg" style="float: left; width: 33%;"></img><iframe width="65%" height="350px" :src="movie.imdb" style="float: right;"></iframe></div>',
+  template: '<div><button v-on:click="favorite" style="float: right;">{{ favText }}</button><h2>{{ movie.title }}</h2><img :src="ratingsImg" style="float: left; width: 33%;"></img><iframe width="65%" height="350px" :src="movie.imdb" style="float: right;"></iframe></div>',
   data: function(){
     return {
       movie: {},
+      favText: 'Favorite'
     }
   }, mounted: function() {
     this.$http.get('/api/movies/' + this.$route.params.id).then(function(res) {
@@ -35,6 +40,11 @@ const Movie = {
         return null
       }
       return '/api/movies/' + this.movie.movieId + '/ratings'
+    }
+  }, methods: {
+    favorite: function() {
+      favorites.push(this.$route.params.id)
+      this.favText = 'Added!'
     }
   }
 }

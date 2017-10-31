@@ -3,6 +3,7 @@ library(dplyr)
 library(readr)
 library(tidyr)
 library(ggplot2)
+library(recommenderlab)
 
 movies <- readr::read_csv("ml-latest-small/movies.csv")
 ratings <- readr::read_csv("ml-latest-small/ratings.csv")
@@ -52,7 +53,32 @@ function(id){
     filter(movieId == id) %>% 
     select(rating) %>% 
     ggplot(aes(rating)) + ggplot2::geom_histogram(binwidth = .5)
-  print(plot)
+  print(plot) # Must print ggplot2
+}
+
+# Build the recommender
+library(reshape2)
+a <- acast(ratings, userId ~ movieId, value.var = "rating")
+user_movie <- as(a, "realRatingMatrix")
+rec <- Recommender(user_movie[1:nrow(user_movie)],method="UBCF")
+
+#' Get recommendations given a set of favorites
+#' @post /api/recommend
+function(movs){
+  # Create a full matrix of this user's ratings with NAs for all values not provided
+  prefs <- rep(NA, ncol(user_movie))
+  names(prefs) <- colnames(user_movie)
+  
+  # Sanitize since we expect only numerical IDs, but colnames are chars so we need to convert back
+  movs <- as.character(as.integer(movs))
+  
+  # Give all favorited movies 5s
+  prefs[movs] <- 5
+  
+  prefs <- as(t(as.matrix(prefs)), "realRatingMatrix")
+  
+  recom <- predict(rec, prefs, n=3)
+  as(recom, "list")
 }
 
 #' Serve the core HTML file for any request for a page
