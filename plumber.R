@@ -58,27 +58,32 @@ function(id){
 
 # Build the recommender
 library(reshape2)
-a <- acast(ratings, userId ~ movieId, value.var = "rating")
-user_movie <- as(a, "realRatingMatrix")
-rec <- Recommender(user_movie[1:nrow(user_movie)],method="UBCF")
 
 #' Get recommendations given a set of favorites
 #' @post /api/recommend
-function(movs){
+function(likes, dislikes){
   # Create a full matrix of this user's ratings with NAs for all values not provided
   prefs <- rep(NA, ncol(user_movie))
   names(prefs) <- colnames(user_movie)
   
   # Sanitize since we expect only numerical IDs, but colnames are chars so we need to convert back
-  movs <- as.character(as.integer(movs))
+  likes <- as.character(as.integer(likes))
+  dislikes <- as.character(as.integer(dislikes))
+  # Give all favorited movies 5s and all disliked 0s
+  prefs[likes] <- 5
+  prefs[dislikes] <- 0
   
-  # Give all favorited movies 5s
-  prefs[movs] <- 5
+  mat <- acast(ratings, userId ~ movieId, value.var = "rating")
+  # Supplement this user's preferences
+  mat <- rbind(mat, prefs)
   
-  prefs <- as(t(as.matrix(prefs)), "realRatingMatrix")
+  user_movie <- as(mat, "realRatingMatrix")
+  rec <- Recommender(user_movie,method="UBCF")
   
-  recom <- predict(rec, prefs, n=3)
-  as(recom, "list")
+  prefs <- user_movie[nrow(user_movie)] # The last row is this user
+  
+  recom <- predict(rec, prefs, n=10)
+  as.numeric(unlist(as(recom, "list")))
 }
 
 #' Serve the core HTML file for any request for a page
