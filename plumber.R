@@ -90,7 +90,11 @@ function(likes, dislikes){
   prefs <- user_movie[nrow(user_movie)] # The last row is this user
   
   recom <- predict(rec, prefs, n=10)
-  as.numeric(unlist(as(recom, "list")))
+  recs <- as.numeric(unlist(as(recom, "list")))
+  # Preview recommendations:
+  #   movies %>% filter(movieId %in% recs)
+  
+  recs
 }
 
 #' Serve the core HTML file for any request for a page
