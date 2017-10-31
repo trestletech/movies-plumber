@@ -62,9 +62,16 @@ library(reshape2)
 #' Get recommendations given a set of favorites
 #' @post /api/recommend
 function(likes, dislikes){
+  # Like Toy Story: likes <- c(1, 3114, 78499)
+  # Don't like dramas: dislikes <- c(318, 858, 912)
+  
+  library(reshape2)
+  
+  mat <- acast(ratings, userId ~ movieId, value.var = "rating")
+  
   # Create a full matrix of this user's ratings with NAs for all values not provided
-  prefs <- rep(NA, ncol(user_movie))
-  names(prefs) <- colnames(user_movie)
+  prefs <- rep(NA, ncol(mat))
+  names(prefs) <- colnames(mat)
   
   # Sanitize since we expect only numerical IDs, but colnames are chars so we need to convert back
   likes <- as.character(as.integer(likes))
