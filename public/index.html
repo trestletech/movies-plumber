@@ -1,0 +1,27 @@
+<html>
+  <head>
+    <script src="https://unpkg.com/vue"></script>  
+    <script src="https://cdn.jsdelivr.net/npm/vue-resource@1.3.4"></script>
+  </head>
+  
+  <div id="app">
+    <h1>Movie Recommendation System</h1>
+    <h2>Top 10 Movies</h2>
+    <table>
+      <tr>
+        <th>Movie</th>
+        <th>Rating</th>
+        <th>Votes</th>
+      </tr>
+      <tr v-for="mov in movies">
+        <td>mov.title</td>
+        <td>mov.avgRating</td>
+        <td>mov.votes</td>
+      </tr>
+    </table>
+    <p>{{ message }}</p>
+    <p> Movie: {{ currentMovie }} </p>
+  </div>
+    
+  <script src="/public/movies.js"></script>
+</html>
