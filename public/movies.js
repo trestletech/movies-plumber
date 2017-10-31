@@ -1,12 +1,22 @@
 const Home = { 
-  template: '<div><search style="float: right; width: 45%;"></search><div style="width: 50%"><h2>Top 10 Movies</h2><ul><li v-for="m in movies"><router-link :to="m.link">{{ m.title }}</router-link></li></ul></div><h2>Recommended for you</h2></div>',
+  template: '<div><search style="float: right; width: 45%;"></search><div style="width: 50%"><h2>Top 10 Movies</h2><ul><li v-for="m in movies"><router-link :to="m.link">{{ m.title }}</router-link></li></ul></div><h2>Recommended for you</h2><ul><li v-for="m in recommended"><router-link :to="m.link">{{ m.title }}</router-link></li></ul></div>',
   data: function(){
     return {
-      movies: []
+      movies: [],
+      recommended: []
     }
   }, mounted: function(){
     this.$http.get('/api/movies/top').then(function(res) {
       this.movies = res.data.map(m => {
+        m.link = '/movies/' + m.movieId
+        return m
+      })
+    }.bind(this), err => {
+      console.log(err);
+    })
+    
+    this.$http.get('/api/movies/recommend').then(function(res) {
+      this.recommended = res.data.map(m => {
         m.link = '/movies/' + m.movieId
         return m
       })

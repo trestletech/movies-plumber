@@ -5,9 +5,12 @@ library(tidyr)
 library(ggplot2)
 library(recommenderlab)
 
-movies <- readr::read_csv("ml-latest-small/movies.csv")
-ratings <- readr::read_csv("ml-latest-small/ratings.csv")
-links <- readr::read_csv("ml-latest-small/links.csv") %>% 
+#movies <- readr::read_csv("ml-latest-small/movies.csv")
+#ratings <- readr::read_csv("ml-latest-small/ratings.csv")
+#links <- readr::read_csv("ml-latest-small/links.csv") %>% 
+movies <- readr::read_csv("ml-20m/movies.csv")
+ratings <- readr::read_csv("ml-20m/ratings.csv")
+links <- readr::read_csv("ml-20m/links.csv") %>% 
   mutate(imdb = paste0("http://www.imdb.com/title/tt", imdbId, "/"),
          tmdb = paste0("https://www.themoviedb.org/movie/", tmdbId),
          movielens = paste0("https://movielens.org/movies/", movieId)) %>% 
@@ -21,7 +24,7 @@ ratedMovies <- ratings %>%
 
 #' Get the top 10 ranked movies
 #' @get /api/movies/top
-function(){
+top <- function(){
   ratedMovies %>% 
     filter(votes > 50) %>% # Minimum of 10 votes
     arrange(desc(avgRating)) %>% 
@@ -39,7 +42,7 @@ function(id){
 
 #' Search for a movie by title
 #' @post /api/search
-function(q){
+search <- function(q){
   # Alphanumeric and spaces only
   query <- gsub("[^\\w ]", "", q, perl=TRUE)
   movies %>% filter(grepl(toupper(query), toupper(title), fixed=TRUE))
@@ -60,20 +63,28 @@ function(id){
 library(reshape2)
 
 #' Get recommendations given a set of favorites
-#' @post /api/recommend
+#' @post /api/movies/recommend
 function(likes, dislikes){
+  # Like Toy Story: likes <- c(1, 3114, 78499)
+  # Don't like dramas: dislikes <- c(318, 858, 912)
+  
+  sample <- ratings %>% dplyr::sample_n(500000)
+  
+  library(reshape2)
+  mat <- acast(sample, userId ~ movieId, value.var = "rating")
+  
   # Create a full matrix of this user's ratings with NAs for all values not provided
-  prefs <- rep(NA, ncol(user_movie))
-  names(prefs) <- colnames(user_movie)
+  prefs <- rep(NA, ncol(mat))
+  names(prefs) <- colnames(mat)
   
   # Sanitize since we expect only numerical IDs, but colnames are chars so we need to convert back
   likes <- as.character(as.integer(likes))
   dislikes <- as.character(as.integer(dislikes))
+  
   # Give all favorited movies 5s and all disliked 0s
   prefs[likes] <- 5
   prefs[dislikes] <- 0
   
-  mat <- acast(ratings, userId ~ movieId, value.var = "rating")
   # Supplement this user's preferences
   mat <- rbind(mat, prefs)
   
