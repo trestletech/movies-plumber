@@ -21,7 +21,7 @@ ratedMovies <- ratings %>%
 
 #' Get the top 10 ranked movies
 #' @get /api/movies/top
-function(){
+top <- function(){
   ratedMovies %>% 
     filter(votes > 50) %>% # Minimum of 10 votes
     arrange(desc(avgRating)) %>% 
