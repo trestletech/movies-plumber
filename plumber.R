@@ -108,12 +108,5 @@ function(res){
   plumber::include_html("./public/index.html", res)
 }
 
-#' Serve the core HTML file for any request for a page
-#' TODO: collapse into a single endpoint once https://github.com/trestletech/plumber/issues/191
-#' @get /movies/<id>
-function(res){
-  plumber::include_html("./public/index.html", res)
-}
-
 #' @assets ./public
 list()

@@ -6,18 +6,18 @@ const Home = {
       recommended: []
     }
   }, mounted: function(){
-    this.$http.get('/api/movies/top').then(function(res) {
+    this.$http.get('./api/movies/top').then(function(res) {
       this.movies = res.data.map(m => {
-        m.link = '/movies/' + m.movieId
+        m.link = './movies/' + m.movieId
         return m
       })
     }.bind(this), err => {
       console.log(err);
     })
     
-    this.$http.post('/api/movies/recommend', {likes:likes, dislikes:dislikes}).then(function(res) {
+    this.$http.post('./api/movies/recommend', {likes:likes, dislikes:dislikes}).then(function(res) {
       this.recommended = res.data.map(m => {
-        m.link = '/movies/' + m.movieId
+        m.link = './movies/' + m.movieId
         return m
       })
     }.bind(this), err => {
@@ -43,7 +43,7 @@ const Movie = {
  ,
       likeDisabled: false,   }
   }, mounted: function() {
-    this.$http.get('/api/movies/' + this.$route.params.id).then(function(res) {
+    this.$http.get('./api/movies/' + this.$route.params.id).then(function(res) {
       this.movie = res.data;
     }.bind(this), err => {
       console.log(err);
@@ -53,7 +53,7 @@ const Movie = {
       if (!this.movie){
         return null
       }
-      return '/api/movies/' + this.movie.movieId + '/ratings'
+      return './api/movies/' + this.movie.movieId + '/ratings'
     }
   }, methods: {
     dislike: function() {
@@ -81,9 +81,9 @@ Vue.component('search', {
   },
   methods: {
     search: function(){
-      this.$http.post('/api/search?q=' + this.query).then(function(res) {
+      this.$http.post('./api/search?q=' + this.query).then(function(res) {
         this.results = res.data.map(r => {
-          r.link = '/movies/' + r.movieId
+          r.link = './movies/' + r.movieId
           return r
         });
       }.bind(this), err => {
@@ -99,7 +99,6 @@ const routes = [
 ]
 
 const router = new VueRouter({
-  mode: 'history',
   routes: routes
 })
 
