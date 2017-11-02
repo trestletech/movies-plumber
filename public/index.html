@@ -1,28 +1,39 @@
-<html>
+<!doctype html>
+<html lang="en">
   <head>
-    <script src="./public/lib/vue.js"></script>  
+    <title>Movie Recommender!</title>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="./public/lib/bootstrap.min.css">
+    <script src="./public/lib/vue.js"></script>
     <script src="./public/lib/vue-resource.js"></script>
     <script src="./public/lib/vue-router.js"></script>
-    <style>
-      a, a:visited {
-        color: #009;
-      }
-    </style>
   </head>
-  
-  <div id="app">
-    <h1>Movie Recommendation System</h1>
-    <router-link to="/">Home</router-link>
-    <router-view></router-view>
-  </div>
-    
-  <hr>
-    
-  <div>
-    Movie data courtesy of:
-    <p></p><code>F. Maxwell Harper and Joseph A. Konstan. 2015. The MovieLens Datasets: History and Context. ACM Transactions on Interactive Intelligent Systems (TiiS) 5, 4, Article 19 (December 2015), 19 pages. DOI=http://dx.doi.org/10.1145/2827872</code></p>
-    <p>Recommendation system built using <code>recommenderlab</code>:</p>
-    <p><code>Michael Hahsler (2016). recommenderlab: A Framework for Developing and Testing Recommendation Algorithms, R package. https://CRAN.R-project.org/package=recommenderlab</code></p>
-  </div>
-  <script src="./public/movies.js"></script>
+  <body>
+    <div id="app">
+      <nav class="navbar navbar-light bg-light">
+        <router-link to="/" class="navbar-brand">Movie Recommender</router-link>
+      </nav>
+
+      <div class="container">
+        <router-view></router-view>
+
+        <hr>
+
+        <div class="row">
+          <div class="col-md">
+            Movie data courtesy of:
+            <p></p><code>F. Maxwell Harper and Joseph A. Konstan. 2015. The MovieLens Datasets: History and Context. ACM Transactions on Interactive Intelligent Systems (TiiS) 5, 4, Article 19 (December 2015), 19 pages. DOI=http://dx.doi.org/10.1145/2827872</code></p>
+          </div>
+          <div class="col-md">
+            <p>Recommendation system built using <code>recommenderlab</code>:</p>
+            <p><code>Michael Hahsler (2016). recommenderlab: A Framework for Developing and Testing Recommendation Algorithms, R package. https://CRAN.R-project.org/package=recommenderlab</code></p>
+          </div>
+        </div>
+      </div>
+      <script src="./public/movies.js"></script>
+  </body>
 </html>

@@ -1,5 +1,5 @@
 const Home = { 
-  template: '<div><search style="float: right; width: 45%;"></search><div style="width: 50%"><h2>Recommended for you</h2><ol><li v-for="m in recommended"><router-link :to="m.link">{{ m.title }}</router-link></li></ol></div></div>',
+  template: '<div class="row"><div class="col-md"><h2>Recommended for you</h2><ol><li v-for="m in recommended"><router-link :to="m.link">{{ m.title }}</router-link></li></ol></div><div class="col-md"><search></search></div></div>',
   data: function(){
     return {
       movies: [],
@@ -72,7 +72,7 @@ const Movie = {
 }
 
 Vue.component('search', {
-  template:'<div>Search: <input v-model="query" v-on:keyup.enter="search"></input><button v-on:click="search">Search</button><ul><li v-for="r in results"><router-link :to="r.link">{{ r.title }}</router-link></li></ul></div>',
+  template:'<div>Search: <input v-model="query" v-on:keyup="search"></input><ul><li v-for="r in results"><router-link :to="r.link">{{ r.title }}</router-link></li></ul></div>',
   data: function(){
     return { 
       query: '',
@@ -81,6 +81,10 @@ Vue.component('search', {
   },
   methods: {
     search: function(){
+      if (this.query.length < 3) {
+        this.results = []
+        return
+      }
       this.$http.post('./api/search?q=' + this.query).then(function(res) {
         this.results = res.data.map(r => {
           r.link = './movies/' + r.movieId

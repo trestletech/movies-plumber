@@ -3,6 +3,14 @@
 
 Download and unzip the data from http://files.grouplens.org/datasets/movielens/ml-latest-small.zip into this directory. This should create a directory named `ml-latest-small` which has some CSV files inside of it.
 
+You can then run the plumber API as follows:
+
+```
+plumber::run("plumber.R")$run(port=8000)
+```
+
+Then access http://localhost:8000/ to see the application.
+
 ## Data Source
 
 Data from MovieLens https://grouplens.org/datasets/movielens/
